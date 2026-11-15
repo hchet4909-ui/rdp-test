@@ -1,32 +1,39 @@
 name: secure-rdp
-on: workflow_dispatch:
-jobs: build: runs-on: windows-latest timeout-minutes: 360
-steps:
-- name: Enable RDP
-  run: |
-    Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
-    Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-    Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
-    net user RDP MR.English200 /add
-    net localgroup administrators RDP /add
 
-- name: Install and Connect Tailscale
-  uses: tailscale/github-action@v2
-  with:
-    authkey: ${{ secrets.TS_AUTHKEY }}
-    version: latest
+on:
+  workflow_dispatch:
 
-- name: Get Tailscale IP
-  run: |
-    Write-Host "--- RDP ACCESS ---"
-    $TS_IP = (tailscale ip -4)
-    Write-Host "Address: $TS_IP"
-    Write-Host "Username: RDP"
-    Write-Host "Password: MR.English200"
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 360
 
-- name: Keep Alive
-  run: |
-    while ($true) {
-      Start-Sleep -Seconds 30
-      Write-Host "Waiting for RDP profile to be created..."
-    }
+    steps:
+    - name: Enable RDP
+      run: |
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
+        net user RDP MR.English200 /add
+        net localgroup administrators RDP /add
+
+    - name: Install and Connect Tailscale
+      uses: tailscale/github-action@v2
+      with:
+        authkey: ${{ secrets.TS_AUTHKEY }}
+        version: latest
+
+    - name: Get Tailscale IP
+      run: |
+        Write-Host "--- RDP ACCESS ---"
+        $TS_IP = (tailscale ip -4)
+        Write-Host "Address: $TS_IP"
+        Write-Host "Username: RDP"
+        Write-Host "Password: MR.English200"
+
+    - name: Keep Alive
+      run: |
+        while ($true) {
+          Start-Sleep -Seconds 30
+          Write-Host "Waiting for RDP profile to be created..."
+        }
