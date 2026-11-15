@@ -30,4 +30,3 @@ steps:
       Start-Sleep -Seconds 30
       Write-Host "Waiting for RDP profile to be created..."
     }
-    
