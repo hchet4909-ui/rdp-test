@@ -19,7 +19,8 @@ jobs:
 
     - name: Download & Install Tailscale
       run: |
-        Invoke-WebRequest -Uri "https://pkgs.tailscale.com/stable/tailscale-setup-unsigned.msi" -OutFile "tailscale-setup.msi"
+        $url = "https://pkgs.tailscale.com/stable/tailscale-setup-1.68.0-amd64.msi"
+        Invoke-WebRequest -Uri $url -OutFile "tailscale-setup.msi"
         Start-Process msiexec.exe -ArgumentList '/i tailscale-setup.msi /quiet /norestart' -Wait
 
     - name: Connect to Tailscale
